@@ -1,0 +1,17 @@
+{
+    "name": "pulpa/laravel-telegram-bot",
+    "description": "Setup a telegram bot",
+    "require": {
+        "illuminate/support": "~5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sahib",
+            "email": "sahib.alejandro@gmail.com"
+        }
+    ]
+}
