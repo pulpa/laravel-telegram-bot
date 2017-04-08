@@ -1,8 +1,9 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing;
+namespace Pulpa\LaravelTelegramBot\Testin\Featureg;
 
 use Pulpa\LaravelTelegramBot\Facades\Bot;
+use Pulpa\LaravelTelegramBot\Testing\TestCase;
 
 class WebhookUpdatesTest extends TestCase
 {
@@ -14,19 +15,17 @@ class WebhookUpdatesTest extends TestCase
 
     public function test_it_registers_a_new_chat()
     {
-        $chatId = 12345;
         $update = [
             'message' => [
-                'chat' => ['id' => $chatId, 'type' => 'private']
+                'chat' => ['id' => 123, 'type' => 'private']
             ]
         ];
-
-        Bot::shouldReceive('sayHello')->once()->with(12345);
+        Bot::shouldReceive('sayHello')->once()->with(123);
 
         $this->json('post', config('bot.token'), $update)->assertStatus(200);
 
         $this->assertDatabaseHas('bot_chats', [
-            'id' => 12345,
+            'id' => 123,
             'type' => 'private'
         ]);
     }

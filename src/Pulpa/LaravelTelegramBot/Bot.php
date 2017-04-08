@@ -35,30 +35,18 @@ class Bot
     }
 
     /**
-     * Get basic information about the bot.
+     * Send a request to the given API method.
      *
-     * @link   https://core.telegram.org/bots/api#getme
+     * @param  string  $methodName
+     * @param  array  $parameters
      * @return object
      */
-    public function getMe()
+    public function __call($methodName, $parameters)
     {
-        return $this->call('GET', 'getMe');
-    }
+        $data = count($parameters) ? $parameters[0] : [];
+        $method = starts_with($methodName, 'get') ? 'GET' : 'POST';
 
-    /**
-     * Send a message to the given chat.
-     *
-     * @param  int|array  $chat
-     * @param  null|string  $text
-     * @link   https://core.telegram.org/bots/api#sendmessage
-     * @return mixed
-     */
-    public function sendMessage($chat, $text = null)
-    {
-        return $this->call('POST', 'sendMessage', is_array($chat) ? $chat : [
-            'chat_id' => $chat,
-            'text' => $text,
-        ]);
+        return $this->call($method, $methodName, $data);
     }
 
     /**
@@ -74,8 +62,70 @@ class Bot
         $method = strtolower($method);
 
         return json_decode(
-            $this->http->$method($methodName, ['body' => json_encode($data)])->getBody()
+            $this->http->$method($methodName, $this->makeRequestOptions($data))->getBody()
         );
+    }
+
+    /**
+     * Return an array of options to use in a HTTP request.
+     *
+     * @param  array  $data
+     * @return array
+     */
+    public function makeRequestOptions($data)
+    {
+        $options = [
+            'headers' => [
+                'content-type' => 'application/json'
+            ]
+        ];
+
+        if ( ! $this->hasFiles($data)) {
+            $options['body'] = json_encode($data);
+        } else {
+            $options['headers']['content-type'] = 'multipart/form-data';
+            $options['multipart'] = $this->formatDataAsMultipart($data);
+        }
+
+        return $options;
+    }
+
+    /**
+     * Format the given data array to an array compatible with a multipart
+     * form data request.
+     *
+     * @param  array  $data
+     * @return array
+     */
+    public function formatDataAsMultipart($data)
+    {
+        $multipart = [];
+
+        foreach ($data as $key => $value) {
+            $multipart[] = [
+                'name' => $key,
+                'contents' => $value,
+            ];
+        }
+
+        return $multipart;
+    }
+
+    /**
+     * Checks if the given data contains files (resource).
+     *
+     * @param  array  $data
+     * @return bool
+     */
+    public function hasFiles($data)
+    {
+        foreach ($data as $key => $value) {
+            if (is_resource($value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

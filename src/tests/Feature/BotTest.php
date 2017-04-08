@@ -1,9 +1,9 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing;
+namespace Pulpa\LaravelTelegramBot\Testing\Feature;
 
 use Pulpa\LaravelTelegramBot\Bot;
-use Pulpa\LaravelTelegramBot\Chat;
+use Pulpa\LaravelTelegramBot\Testing\TestCase;
 
 class BotTest extends TestCase
 {
@@ -18,15 +18,17 @@ class BotTest extends TestCase
     }
 
     /** @test */
-    public function send_message()
+    public function send_a_message_passing_an_array_as_parameter()
     {
-        $chatId = env('TELEGRAM_CHAT_ID');
         $bot = new Bot(config('bot.token'));
 
-        $response = $bot->sendMessage($chatId, 'Text message');
+        $response = $bot->sendMessage([
+            'chat_id' => env('TELEGRAM_CHAT_ID'),
+            'text' => 'Text message',
+        ]);
 
         $this->assertTrue($response->ok);
         $this->assertEquals('Text message', $response->result->text);
-        $this->assertEquals($chatId, $response->result->chat->id);
+        $this->assertEquals(env('TELEGRAM_CHAT_ID'), $response->result->chat->id);
     }
 }
