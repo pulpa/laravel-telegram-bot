@@ -20,7 +20,7 @@ class BotController
         $chat = Chat::register($update->message->chat);
 
         if ($chat->wasRecentlyCreated) {
-            Bot::sayHello($chat);
+            Bot::sayHello($chat->id);
         }
     }
 

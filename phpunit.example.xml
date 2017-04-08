@@ -1,0 +1,6 @@
+<phpunit>
+    <php>
+        <env name="TELEGRAM_BOT_TOKEN" value="YourTelegramBotTokenForTesting"/>
+        <env name="TELEGRAM_CHAT_ID" value="YourTelegramPrivateChatIdForTesting"/>
+    </php>
+</phpunit>

@@ -25,7 +25,7 @@ class ServiceProvider extends LaravelServiceProvider
 
     protected function registerRoutes()
     {
-        $route = config('bot.route');
+        $route = config('bot.token');
 
         Route::namespace('Pulpa\LaravelTelegramBot\Controllers')
             ->group(function () use ($route) {

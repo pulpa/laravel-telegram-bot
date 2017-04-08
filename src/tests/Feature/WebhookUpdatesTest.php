@@ -14,12 +14,14 @@ class WebhookUpdatesTest extends TestCase
 
     public function test_it_registers_a_new_chat()
     {
-        Bot::shouldReceive('sayHello')->once();
+        $chatId = 12345;
         $update = [
             'message' => [
-                'chat' => ['id' => 12345, 'type' => 'private']
+                'chat' => ['id' => $chatId, 'type' => 'private']
             ]
         ];
+
+        Bot::shouldReceive('sayHello')->once()->with(12345);
 
         $this->json('post', config('bot.token'), $update)->assertStatus(200);
 
