@@ -37,32 +37,32 @@ class Bot
     /**
      * Send a request to the given API method.
      *
-     * @param  string  $methodName
+     * @param  string  $method
      * @param  array  $parameters
      * @return object
      */
-    public function __call($methodName, $parameters)
+    public function __call($method, $parameters)
     {
         $data = count($parameters) ? $parameters[0] : [];
-        $method = starts_with($methodName, 'get') ? 'GET' : 'POST';
+        $httpMethod = starts_with($method, 'get') ? 'GET' : 'POST';
 
-        return $this->call($method, $methodName, $data);
+        return $this->call($httpMethod, $method, $data);
     }
 
     /**
      * Makes an HTTP request and return the JSON object form the response.
      *
-     * @param  string  $method
-     * @param  string  $methodName
+     * @param  string  $httpMethod
+     * @param  string  $apiMethod
      * @param  array  $data
      * @return object
      */
-    public function call($method, $methodName, $data = [])
+    public function call($httpMethod, $apiMethod, $data = [])
     {
-        $method = strtolower($method);
+        $httpMethod = strtolower($httpMethod);
 
         return json_decode(
-            $this->http->$method($methodName, $this->makeRequestOptions($data))->getBody()
+            $this->http->$httpMethod($apiMethod, $this->makeRequestOptions($data))->getBody()
         );
     }
 
@@ -74,16 +74,11 @@ class Bot
      */
     public function makeRequestOptions($data)
     {
-        $options = [
-            'headers' => [
-                'content-type' => 'application/json'
-            ]
-        ];
+        $options = [];
 
         if ( ! $this->hasFiles($data)) {
-            $options['body'] = json_encode($data);
+            $options['json'] = $data;
         } else {
-            $options['headers']['content-type'] = 'multipart/form-data';
             $options['multipart'] = $this->formatDataAsMultipart($data);
         }
 
@@ -101,11 +96,8 @@ class Bot
     {
         $multipart = [];
 
-        foreach ($data as $key => $value) {
-            $multipart[] = [
-                'name' => $key,
-                'contents' => $value,
-            ];
+        foreach ($data as $name => $contents) {
+            $multipart[] = compact('name', 'contents');
         }
 
         return $multipart;
@@ -119,7 +111,7 @@ class Bot
      */
     public function hasFiles($data)
     {
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             if (is_resource($value)) {
                 return true;
             }
@@ -137,7 +129,6 @@ class Bot
     {
         return new Client([
             'base_uri' => "https://api.telegram.org/bot{$this->token}/",
-            'headers' => ['content-type' => 'application/json'],
         ]);
     }
 }

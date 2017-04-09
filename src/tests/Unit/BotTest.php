@@ -17,10 +17,7 @@ class BotTest extends TestCase
         ]);
 
         $this->assertEquals([
-            'headers' => [
-                'content-type' => 'application/json',
-            ],
-            'body' => json_encode(['field' => 'value']),
+            'json' => ['field' => 'value'],
         ], $result);
     }
 
@@ -36,9 +33,6 @@ class BotTest extends TestCase
         ]);
 
         $this->assertEquals([
-            'headers' => [
-                'content-type' => 'multipart/form-data',
-            ],
             'multipart' => [
                 [
                     'name' => 'field',
