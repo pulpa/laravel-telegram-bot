@@ -21,6 +21,7 @@ class BotController
 
         if ($chat->wasRecentlyCreated) {
             Bot::sayHello($chat->id);
+            return response()->json([], 201);
         }
     }
 

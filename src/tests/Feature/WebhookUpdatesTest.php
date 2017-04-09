@@ -13,7 +13,8 @@ class WebhookUpdatesTest extends TestCase
         $this->artisan('migrate', ['--database' => 'testing']);
     }
 
-    public function test_it_registers_a_new_chat()
+    /** @test */
+    public function registers_a_new_chat()
     {
         $update = [
             'message' => [
@@ -22,7 +23,7 @@ class WebhookUpdatesTest extends TestCase
         ];
         Bot::shouldReceive('sayHello')->once()->with(123);
 
-        $this->json('post', config('bot.token'), $update)->assertStatus(200);
+        $this->json('POST', config('bot.token'), $update)->assertStatus(201);
 
         $this->assertDatabaseHas('bot_chats', [
             'id' => 123,
