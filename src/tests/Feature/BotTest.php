@@ -16,6 +16,14 @@ class BotTest extends TestCase
     }
 
     /** @test */
+    public function say_hello()
+    {
+        $response = Bot::sayHello(env('TELEGRAM_CHAT_ID'));
+
+        $this->assertTrue($response->ok);
+    }
+
+    /** @test */
     public function send_message()
     {
         $response = Bot::sendMessage([

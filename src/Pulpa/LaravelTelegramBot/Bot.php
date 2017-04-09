@@ -31,7 +31,10 @@ class Bot
      */
     public function sayHello($chat)
     {
-        return $this->sendMessage($chat, "Hello! I'm ready.");
+        return $this->sendMessage([
+            'chat_id' => $chat,
+            'text' => "Hello! I'm ready",
+        ]);
     }
 
     /**
