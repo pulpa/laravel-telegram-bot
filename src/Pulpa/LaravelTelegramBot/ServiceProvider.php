@@ -2,6 +2,7 @@
 
 namespace Pulpa\LaravelTelegramBot;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
@@ -10,7 +11,6 @@ class ServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->registerRoutes();
-        $this->registerMigrations();
         $this->registerPublishable();
     }
 
@@ -45,10 +45,5 @@ class ServiceProvider extends LaravelServiceProvider
     protected function mergeConfig()
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/bot.php', 'bot');
-    }
-
-    protected function registerMigrations()
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../../migrations');
     }
 }

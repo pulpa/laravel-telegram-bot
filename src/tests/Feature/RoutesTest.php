@@ -10,6 +10,6 @@ class RoutesTest extends TestCase
     {
         $this->get(config('bot.token'))
             ->assertStatus(200)
-            ->assertSee("Hello, I'm a bot. [o_o]");
+            ->assertSee("I'm a bot. [o_o]");
     }
 }

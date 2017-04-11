@@ -3,30 +3,27 @@
 namespace Pulpa\LaravelTelegramBot\Controllers;
 
 use Illuminate\Http\Request;
-use Pulpa\LaravelTelegramBot\Chat;
-use Pulpa\LaravelTelegramBot\Facades\Bot;
+use Pulpa\LaravelTelegramBot\Update;
 
 class BotController
 {
     public function index()
     {
-        return "Hello, I'm a bot. [o_o]";
+        return "I'm a bot. [o_o]";
     }
 
+    /**
+     * Receives the request for the webhook.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        $update = $this->getUpdateObjectFrom($request);
+        $update = new Update($request->all());
 
-        $chat = Chat::register($update->message->chat);
-
-        if ($chat->wasRecentlyCreated) {
-            Bot::sayHello($chat->id);
-            return response()->json([], 201);
+        if ($update->isCommand()) {
+            event('bot.command.'.$update->commandName(), $update);
         }
-    }
-
-    protected function getUpdateObjectFrom($request)
-    {
-        return json_decode(json_encode($request->all()));
     }
 }

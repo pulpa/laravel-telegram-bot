@@ -23,21 +23,6 @@ class Bot
     }
 
     /**
-     * Send a hello message to the given chat and return the JSON object from
-     * the response.
-     *
-     * @param  int  $chat
-     * @return object
-     */
-    public function sayHello($chat)
-    {
-        return $this->sendMessage([
-            'chat_id' => $chat,
-            'text' => "Hello! I'm ready",
-        ]);
-    }
-
-    /**
      * Send a request to the given API method.
      *
      * @param  string  $method
