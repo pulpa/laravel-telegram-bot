@@ -1,18 +1,18 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing\Unit;
+namespace Pulpa\Telegram\Bot\Testing\Unit;
 
-use Pulpa\LaravelTelegramBot\Bot;
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Api;
+use Pulpa\Telegram\Bot\Testing\TestCase;
 
-class BotTest extends TestCase
+class ApiTest extends TestCase
 {
     /** @test */
     public function makes_options_for_application_json_request()
     {
-        $bot = new Bot('token');
+        $api = new Api('token');
 
-        $result = $bot->makeRequestOptions([
+        $result = $api->makeRequestOptions([
             'field' => 'value',
         ]);
 
@@ -24,7 +24,7 @@ class BotTest extends TestCase
     /** @test */
     public function makes_options_for_multipart_form_data_request()
     {
-        $bot = new Bot('token');
+        $bot = new Api('token');
         $resource = fopen(__FILE__, 'r');
 
         $result = $bot->makeRequestOptions([
@@ -49,7 +49,7 @@ class BotTest extends TestCase
     /** @test */
     public function detects_when_data_has_files()
     {
-        $bot = new Bot('token');
+        $bot = new Api('token');
 
         $result = $bot->hasFiles([
             'file' => fopen(__FILE__, 'r')
@@ -61,7 +61,7 @@ class BotTest extends TestCase
     /** @test */
     public function detects_when_data_does_not_have_files()
     {
-        $bot = new Bot('token');
+        $bot = new Api('token');
 
         $result = $bot->hasFiles([
             'field' => 'value'
@@ -73,7 +73,7 @@ class BotTest extends TestCase
     /** @test */
     public function format_data_as_multipart()
     {
-        $bot = new Bot('token');
+        $bot = new Api('token');
         $resource = fopen(__FILE__, 'r');
 
         $result = $bot->formatDataAsMultipart([

@@ -1,8 +1,9 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot;
+namespace Pulpa\Telegram\Bot\Providers;
 
-use Illuminate\Support\Facades\Event;
+use Pulpa\Telegram\Bot\Api;
+use Pulpa\Telegram\Bot\Update;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
@@ -18,8 +19,12 @@ class ServiceProvider extends LaravelServiceProvider
     {
         $this->mergeConfig();
 
-        $this->app->singleton('pulpa_laravel_telegram_bot', function () {
-            return new Bot(config('bot.token'));
+        $this->app->singleton(Update::class, function () {
+            return new Update(request()->all());
+        });
+
+        $this->app->singleton('pulpa_telegram_bot_api', function () {
+            return new Api(config('bot.token'));
         });
     }
 
@@ -27,7 +32,7 @@ class ServiceProvider extends LaravelServiceProvider
     {
         $route = config('bot.token');
 
-        Route::namespace('Pulpa\LaravelTelegramBot\Controllers')
+        Route::namespace('Pulpa\Telegram\Bot\Http\Controllers')
             ->group(function () use ($route) {
                 Route::get($route, 'BotController@index')->name('bot.index');
                 Route::post($route, 'BotController@store')->name('bot.store');
@@ -38,12 +43,12 @@ class ServiceProvider extends LaravelServiceProvider
     protected function registerPublishable()
     {
         $this->publishes([
-            __DIR__.'/../../config/bot.php' => config_path('bot.php'),
+            __DIR__.'/../../../../config/bot.php' => config_path('bot.php'),
         ]);
     }
 
     protected function mergeConfig()
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/bot.php', 'bot');
+        $this->mergeConfigFrom(__DIR__.'/../../../../config/bot.php', 'bot');
     }
 }

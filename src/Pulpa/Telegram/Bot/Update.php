@@ -1,6 +1,6 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot;
+namespace Pulpa\Telegram\Bot;
 
 class Update
 {
@@ -60,12 +60,17 @@ class Update
         return $matches[1];
     }
 
+    public function commandMethodName()
+    {
+        return camel_case($this->commandName());
+    }
+
     /**
-     * Get the command payload in this update.
+     * Get the command arguments in this update.
      *
      * @return string
      */
-    public function commandPayload()
+    public function commandArguments()
     {
         $text = explode(' ', $this->message->text);
         array_shift($text);

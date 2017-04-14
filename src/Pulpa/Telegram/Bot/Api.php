@@ -1,10 +1,10 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot;
+namespace Pulpa\Telegram\Bot;
 
 use GuzzleHttp\Client;
 
-class Bot
+class Api
 {
     /**
      * @var string

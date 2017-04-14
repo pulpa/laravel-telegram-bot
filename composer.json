@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Pulpa\\LaravelTelegramBot\\": "src/Pulpa/LaravelTelegramBot/"
+            "Pulpa\\Telegram\\Bot\\": "src/Pulpa/Telegram/Bot/"
         },
         "classmap": [
             "src/tests"

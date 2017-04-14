@@ -1,8 +1,8 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing\Feature;
+namespace Pulpa\Telegram\Bot\Testing\Feature;
 
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Testing\TestCase;
 
 class RoutesTest extends TestCase
 {

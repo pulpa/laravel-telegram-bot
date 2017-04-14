@@ -1,9 +1,9 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing\Feature;
+namespace Pulpa\Telegram\Bot\Testing\Feature;
 
 use Illuminate\Support\Facades\Route;
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Testing\TestCase;
 
 class ServiceProviderTest extends TestCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing;
+namespace Pulpa\Telegram\Bot\Testing;
 
-use Pulpa\LaravelTelegramBot\ServiceProvider;
+use Pulpa\Telegram\Bot\Providers\ServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase

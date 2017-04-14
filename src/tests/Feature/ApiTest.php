@@ -1,16 +1,16 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing\Feature;
+namespace Pulpa\Telegram\Bot\Testing\Feature;
 
-use Pulpa\LaravelTelegramBot\Facades\Bot;
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Facades\Api;
+use Pulpa\Telegram\Bot\Testing\TestCase;
 
-class BotTest extends TestCase
+class ApiTest extends TestCase
 {
     /** @test */
     public function get_me()
     {
-        $response = Bot::getMe();
+        $response = Api::getMe();
 
         $this->assertTrue($response->ok);
     }
@@ -18,7 +18,7 @@ class BotTest extends TestCase
     /** @test */
     public function send_message()
     {
-        $response = Bot::sendMessage([
+        $response = Api::sendMessage([
             'chat_id' => env('TELEGRAM_CHAT_ID'),
             'text' => 'Text message',
         ]);
@@ -31,7 +31,7 @@ class BotTest extends TestCase
     /** @test */
     public function send_photo()
     {
-        $response = Bot::sendPhoto([
+        $response = Api::sendPhoto([
             'chat_id' => env('TELEGRAM_CHAT_ID'),
             'photo' => fopen(__DIR__.'/../files/photo.jpg', 'r'),
             'caption' => 'Test sending a file',
@@ -44,7 +44,7 @@ class BotTest extends TestCase
     /** @test */
     public function send_photo_using_file_id()
     {
-        $response = Bot::sendPhoto([
+        $response = Api::sendPhoto([
             'chat_id' => env('TELEGRAM_CHAT_ID'),
             'photo' => 'AgADAwADqacxG2j8UU_Box8bVQQ0rcL0hjEABArbOXytYTad0AcBAAEC',
             'caption' => 'Test sending a file using file_id',

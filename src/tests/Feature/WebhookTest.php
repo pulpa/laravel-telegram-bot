@@ -1,28 +1,66 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testin\Feature;
+namespace Pulpa\Telegram\Bot\Testin\Feature;
 
-use Illuminate\Support\Facades\Event;
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Testing\BotTestController;
 
 class WebhookTest extends TestCase
 {
     /** @test */
-    public function dispatch_command_for_private_chat()
+    public function call_method_catch_all()
     {
-        Event::fake();
+        config(['bot.controller' => BotTestController::class]);
 
         $input = [
             'message' => [
-                'text' => '/start',
-                'chat' => ['id' => 123, 'type' => 'private'],
+                'text' => 'Single message',
+                'chat' => [ 'type' => 'private' ],
             ],
         ];
 
-        $this->json('POST', config('bot.token'), $input)->assertStatus(200);
+        $response = $this->json('POST', config('bot.token'), $input);
 
-        Event::assertDispatched('bot.command.start', function ($event, $update) use ($input) {
-            return $update->message->chat->id === $input['message']['chat']['id'];
-        });
+        $response->assertStatus(200);
+
+        $this->assertEquals('catch all', $response->getContent());
+    }
+
+    /** @test */
+    public function bot_command_triggers_a_specific_controller_method()
+    {
+        config(['bot.controller' => BotTestController::class]);
+
+        $input = [
+            'message' => [
+                'text' => '/test_command',
+                'chat' => [ 'type' => 'private' ],
+            ],
+        ];
+
+        $response = $this->json('POST', config('bot.token'), $input);
+
+        $response->assertStatus(200);
+
+        $this->assertEquals('method called', $response->getContent());
+    }
+
+    /** @test */
+    public function update_object_is_passed_to_controller_method()
+    {
+        config(['bot.controller' => BotTestController::class]);
+
+        $input = [
+            'message' => [
+                'text' => '/return_arguments arguments',
+                'chat' => ['type' => 'private'],
+            ],
+        ];
+
+        $response = $this->json('POST', config('bot.token'), $input);
+
+        $response->assertStatus(200);
+
+        $this->assertEquals('arguments', $response->getContent());
     }
 }

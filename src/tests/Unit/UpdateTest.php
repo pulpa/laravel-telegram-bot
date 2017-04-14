@@ -1,9 +1,9 @@
 <?php
 
-namespace Pulpa\LaravelTelegramBot\Testing\Unit;
+namespace Pulpa\Telegram\Bot\Testing\Unit;
 
-use Pulpa\LaravelTelegramBot\Update;
-use Pulpa\LaravelTelegramBot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Update;
+use Pulpa\Telegram\Bot\Testing\TestCase;
 
 class UpdateTest extends TestCase
 {
@@ -88,20 +88,20 @@ class UpdateTest extends TestCase
     }
 
     /** @test */
-    public function get_command_payload()
+    public function get_command_arguments()
     {
         $update = new Update([
             'message' => [
-                'text' => '/command_test_123 command payload',
+                'text' => '/command_test_123 command arguments',
             ]
         ]);
 
-        $this->assertEquals('command payload', $update->commandPayload());
+        $this->assertEquals('command arguments', $update->commandArguments());
 
         // Command with bot name.
-        $update->message->text = '/command_test_123@test_bot command payload';
+        $update->message->text = '/command_test_123@test_bot command arguments';
 
-        $this->assertEquals('command payload', $update->commandPayload());
+        $this->assertEquals('command arguments', $update->commandArguments());
     }
 
     /** @test */
@@ -131,5 +131,21 @@ class UpdateTest extends TestCase
         ]);
 
         $this->assertNull($update->commandName());
+    }
+
+    /** @test */
+    public function a_command_name_is_converted_to_method_name()
+    {
+        $update = new Update([
+            'message' => [
+                'chat' => ['type' => 'private'],
+            ],
+        ]);
+
+        $update->message->text = '/command';
+        $this->assertEquals('command', $update->commandMethodName());
+
+        $update->message->text = '/test_command';
+        $this->assertEquals('testCommand', $update->commandMethodName());
     }
 }
