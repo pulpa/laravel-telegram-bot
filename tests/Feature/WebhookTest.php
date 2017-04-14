@@ -8,7 +8,7 @@ use Pulpa\Telegram\Bot\Testing\BotTestController;
 class WebhookTest extends TestCase
 {
     /** @test */
-    public function call_method_catch_all()
+    public function method_catch_all_is_called_when_no_command_is_specified()
     {
         config(['bot.controller' => BotTestController::class]);
 
@@ -27,7 +27,26 @@ class WebhookTest extends TestCase
     }
 
     /** @test */
-    public function bot_command_triggers_a_specific_controller_method()
+    public function method_catch_all_is_called_when_a_command_method_is_not_defined_in_the_controller()
+    {
+        config(['bot.controller' => BotTestController::class]);
+
+        $input = [
+            'message' => [
+                'text' => '/command_not_defined',
+                'chat' => [ 'type' => 'private' ],
+            ],
+        ];
+
+        $response = $this->json('POST', config('bot.token'), $input);
+
+        $response->assertStatus(200);
+
+        $this->assertEquals('catch all', $response->getContent());
+    }
+
+    /** @test */
+    public function specific_command_method_is_called()
     {
         config(['bot.controller' => BotTestController::class]);
 
@@ -46,7 +65,7 @@ class WebhookTest extends TestCase
     }
 
     /** @test */
-    public function update_object_is_passed_to_controller_method()
+    public function update_object_is_passed_to_command_method()
     {
         config(['bot.controller' => BotTestController::class]);
 

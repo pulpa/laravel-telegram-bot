@@ -20,8 +20,12 @@ class BotController
      */
     public function store(Update $update)
     {
+        $method = 'catchAll';
         $controller = app(config('bot.controller'));
-        $method = $update->isCommand() ? $update->commandMethodName() : 'catchAll';
+
+        if ($update->isCommand() && method_exists($controller, $update->commandMethodName())) {
+            $method = $update->commandMethodName();
+        }
 
         return $controller->$method($update);
     }

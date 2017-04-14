@@ -1,6 +1,6 @@
 {
     "name": "pulpa/laravel-telegram-bot",
-    "description": "A package for setup Telegram bots with Laravel",
+    "description": "Framework to build Telegram bots",
     "require": {
         "illuminate/support": "~5.4",
         "guzzlehttp/guzzle": "~6.0"
@@ -15,7 +15,7 @@
             "Pulpa\\Telegram\\Bot\\": "src/Pulpa/Telegram/Bot/"
         },
         "classmap": [
-            "src/tests"
+            "tests"
         ]
     },
     "license": "MIT",
