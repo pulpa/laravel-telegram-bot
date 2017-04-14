@@ -60,6 +60,11 @@ class Update
         return $matches[1];
     }
 
+    /**
+     * Get the command name in camel case.
+     *
+     * @return string
+     */
     public function commandMethodName()
     {
         return camel_case($this->commandName());
