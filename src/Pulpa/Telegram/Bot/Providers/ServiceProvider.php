@@ -23,7 +23,7 @@ class ServiceProvider extends LaravelServiceProvider
             return new Update(request()->all());
         });
 
-        $this->app->singleton('pulpa_telegram_bot_api', function () {
+        $this->app->singleton(Api::class, function () {
             return new Api(config('bot.token'));
         });
     }

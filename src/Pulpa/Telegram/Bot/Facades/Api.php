@@ -8,6 +8,6 @@ class Api extends Facade
 {
     public static function getFacadeAccessor()
     {
-        return 'pulpa_telegram_bot_api';
+        return \Pulpa\Telegram\Bot\Api::class;
     }
 }
