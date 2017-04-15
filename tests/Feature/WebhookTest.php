@@ -27,6 +27,23 @@ class WebhookTest extends TestCase
     }
 
     /** @test */
+    public function method_catch_all_is_called_when_the_update_does_not_have_a_text_message()
+    {
+        config(['bot.controller' => BotTestController::class]);
+
+        $input = [
+            'message' => [
+                'chat' => ['type' => 'private'],
+                'new_chat_member' => ['id' => 123 ],
+            ],
+        ];
+
+        $response = $this->json('POST', config('bot.token'), $input);
+        $response->assertStatus(200);
+        $this->assertEquals('catch all', $response->getContent());
+    }
+
+    /** @test */
     public function method_catch_all_is_called_when_a_command_method_is_not_defined_in_the_controller()
     {
         config(['bot.controller' => BotTestController::class]);
@@ -39,7 +56,6 @@ class WebhookTest extends TestCase
         ];
 
         $response = $this->json('POST', config('bot.token'), $input);
-
         $response->assertStatus(200);
 
         $this->assertEquals('catch all', $response->getContent());

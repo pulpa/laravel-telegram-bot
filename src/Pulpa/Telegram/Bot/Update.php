@@ -2,6 +2,8 @@
 
 namespace Pulpa\Telegram\Bot;
 
+use Pulpa\Telegram\Bot\Exceptions\NoMessageException;
+
 class Update
 {
     /**
@@ -10,6 +12,18 @@ class Update
      * @var object
      */
     protected $data;
+
+    /**
+     * Type of messages that an update can contain.
+     *
+     * @var array
+     */
+    protected $messageTypes = [
+        'message',
+        'edited_message',
+        'channel_post',
+        'edited_channel_post',
+    ];
 
     /**
      * @param  array  $data
@@ -27,7 +41,11 @@ class Update
      */
     public function __get($property)
     {
-        return $this->data->$property;
+        if (property_exists($this->data, $property)) {
+            return $this->data->$property;
+        }
+
+        return null;
     }
 
     /**
@@ -37,13 +55,17 @@ class Update
      */
     public function isCommand()
     {
+        if ( ! $this->hasTextMessage()) {
+            return false;
+        }
+
         $regexp = '^/[a-z0-9_]+';
 
-        if ($this->message->chat->type == 'group') {
+        if ($this->getMessage()->chat->type == 'group') {
             $regexp .= '@'.config('bot.name');
         }
 
-        return (boolean) preg_match("|{$regexp}|", $this->message->text);
+        return (boolean) preg_match("|{$regexp}|", $this->getMessage()->text);
     }
 
     /**
@@ -53,7 +75,7 @@ class Update
      */
     public function commandName()
     {
-        if ( ! preg_match('|^/([a-z0-9_]+)|', $this->message->text, $matches)) {
+        if ( ! preg_match('|^/([a-z0-9_]+)|', $this->getMessage()->text, $matches)) {
             return null;
         }
 
@@ -77,9 +99,60 @@ class Update
      */
     public function commandArguments()
     {
-        $text = explode(' ', $this->message->text);
+        $text = explode(' ', $this->getMessage()->text);
         array_shift($text);
 
         return trim(implode(' ', $text));
+    }
+
+    /**
+     * Checks if this update contains a message.
+     *
+     * @return boolean
+     */
+    public function hasMessage()
+    {
+        return $this->messageType() !== null;
+    }
+
+    /**
+     * Checks if this update contains a text message.
+     *
+     * @return boolean
+     */
+    public function hasTextMessage()
+    {
+        return $this->hasMessage() && property_exists($this->getMessage(), 'text');
+    }
+
+    /**
+     * Ge the message object in this update.
+     *
+     * @return object
+     */
+    public function getMessage()
+    {
+        if (is_null($messageType = $this->messageType())) {
+            throw new NoMessageException;
+        }
+
+        return $this->data->$messageType;
+    }
+
+    /**
+     * Returns the message type in this update, if this update does not have
+     * any message then returns null.
+     *
+     * @return string|null
+     */
+    public function messageType()
+    {
+        foreach ($this->messageTypes as $messageType) {
+            if (property_exists($this->data, $messageType)) {
+                return $messageType;
+            }
+        }
+
+        return null;
     }
 }

@@ -4,6 +4,7 @@ namespace Pulpa\Telegram\Bot\Testing\Unit;
 
 use Pulpa\Telegram\Bot\Update;
 use Pulpa\Telegram\Bot\Testing\TestCase;
+use Pulpa\Telegram\Bot\Exceptions\NoMessageException;
 
 class UpdateTest extends TestCase
 {
@@ -78,13 +79,99 @@ class UpdateTest extends TestCase
     }
 
     /** @test */
-    public function access_data_properties_from_update_object()
+    public function no_command_is_present_if_there_is_no_message()
     {
         $update = new Update([
-            'property' => 'value'
+            'update_id' => 1234567890,
         ]);
 
-        $this->assertEquals('value', $update->property);
+        $this->assertFalse($update->isCommand());
+    }
+
+    /** @test */
+    public function no_command_is_present_if_there_is_no_text_message()
+    {
+        $update = new Update([
+            'message' => [
+                'chat' => ['type' => 'ANY TYPE'],
+            ],
+        ]);
+
+        $this->assertFalse($update->isCommand());
+    }
+
+    /** @test */
+    public function update_has_a_message_of_any_type()
+    {
+        $update = new Update([ 'message' => ['foo' => 'bar'] ]);
+        $this->assertTrue($update->hasMessage());
+
+        $update = new Update([ 'edited_message' => ['foo' => 'bar'] ]);
+        $this->assertTrue($update->hasMessage());
+
+        $update = new Update([ 'channel_post' => ['foo' => 'bar'] ]);
+        $this->assertTrue($update->hasMessage());
+
+        $update = new Update([ 'edited_channel_post' => ['foo' => 'bar'] ]);
+        $this->assertTrue($update->hasMessage());
+
+        $update = new Update([ 'no_message' => [] ]);
+        $this->assertFalse($update->hasMessage());
+    }
+
+    /** @test */
+    public function update_has_text_message()
+    {
+        $update = new Update([ 'message' => ['text' => 'hello'] ]);
+        $this->assertTrue($update->hasTextMessage());
+
+        $update = new Update([ 'message' => ['foo' => 'bar'] ]);
+        $this->assertFalse($update->hasTextMessage());
+    }
+
+    /** @test */
+    public function get_message()
+    {
+        $update = new Update([ 'message' => 'Message' ]);
+        $this->assertEquals('Message', $update->getMessage());
+
+        $update = new Update([ 'edited_message' => 'Edited Message' ]);
+        $this->assertEquals('Edited Message', $update->getMessage());
+
+        $update = new Update([ 'channel_post' => 'Channel Post' ]);
+        $this->assertEquals('Channel Post', $update->getMessage());
+
+        $update = new Update([ 'edited_channel_post' => 'Edited Channel Post' ]);
+        $this->assertEquals('Edited Channel Post', $update->getMessage());
+
+        $update = new Update(['no_message' => 'foo']);
+
+        try {
+            $update->getMessage();
+        } catch(NoMessageException $e) {
+            return;
+        }
+
+        $this->fail('Exception NoMessageException was not thrown');
+    }
+
+    /** @test */
+    public function get_message_type()
+    {
+        $update = new Update([ 'message' => 'foo' ]);
+        $this->assertEquals('message', $update->messageType());
+
+        $update = new Update([ 'edited_message' => 'foo' ]);
+        $this->assertEquals('edited_message', $update->messageType());
+
+        $update = new Update([ 'channel_post' => 'foo' ]);
+        $this->assertEquals('channel_post', $update->messageType());
+
+        $update = new Update([ 'edited_channel_post' => 'foo' ]);
+        $this->assertEquals('edited_channel_post', $update->messageType());
+
+        $update = new Update([ 'no_message' => 'foo' ]);
+        $this->assertNull($update->messageType());
     }
 
     /** @test */
@@ -99,7 +186,7 @@ class UpdateTest extends TestCase
         $this->assertEquals('command arguments', $update->commandArguments());
 
         // Command with bot name.
-        $update->message->text = '/command_test_123@test_bot command arguments';
+        $update->getMessage()->text = '/command_test_123@test_bot command arguments';
 
         $this->assertEquals('command arguments', $update->commandArguments());
     }
@@ -116,7 +203,7 @@ class UpdateTest extends TestCase
         $this->assertEquals('command_test_123', $update->commandName());
 
         // Command with bot name.
-        $update->message->text = '/command_test_123@test_bot';
+        $update->getMessage()->text = '/command_test_123@test_bot';
 
         $this->assertEquals('command_test_123', $update->commandName());
     }
@@ -142,10 +229,19 @@ class UpdateTest extends TestCase
             ],
         ]);
 
-        $update->message->text = '/command';
+        $update->getMessage()->text = '/command';
         $this->assertEquals('command', $update->commandMethodName());
 
-        $update->message->text = '/test_command';
+        $update->getMessage()->text = '/test_command';
         $this->assertEquals('testCommand', $update->commandMethodName());
+    }
+
+    /** @test */
+    public function access_update_properties_through_update_object()
+    {
+        $update = new Update(['field' => 'value']);
+
+        $this->assertEquals('value', $update->field);
+        $this->assertNull($update->undefined_field);
     }
 }
