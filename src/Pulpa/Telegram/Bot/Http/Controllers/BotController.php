@@ -20,6 +20,8 @@ class BotController
      */
     public function store(Update $update)
     {
+        $this->logRequest();
+
         $method = 'catchAll';
         $controller = app(config('bot.controller'));
 
@@ -28,5 +30,17 @@ class BotController
         }
 
         return $controller->$method($update);
+    }
+
+    /**
+     * Log the request input.
+     *
+     * @param  \Pulpa\Telegram\Bot\Update  $update
+     */
+    private function logRequest()
+    {
+        if (env('APP_DEBUG') && config('bot.debug_log', false)) {
+            \Log::debug('Update', request()->all());
+        }
     }
 }

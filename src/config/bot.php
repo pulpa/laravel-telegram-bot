@@ -31,4 +31,14 @@ return [
     | Pulpa\Telegram\Bot\Http\Controllers\Controller
     */
     'controller' => App\Http\Controllers\BotController::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Debug Log
+    |--------------------------------------------------------------------------
+    |
+    | Set this to true to log all incoming updates while your app is on debug
+    | mode.
+    */
+    'debug_log' => true,
 ];
